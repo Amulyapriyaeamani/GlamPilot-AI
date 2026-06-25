@@ -79,6 +79,23 @@ The beauty and grooming industry in Hyderabad is thriving yet deeply fragmented.
 ## Architecture
 The application is structured as a full-stack, single-container architecture optimized for high-performance and cloud-native hosting environments:
 
+┌──────────────────────────────────────────────────────────────┐
+│ Client Browser │
+│ (React SPA, Tailwind UI, Motion, Interactive Consultation) │
+└───────────────┬──────────────────────────────▲───────────────┘
+│ GET /api/* (JSON) │ SPA Static Assets
+│ POST /api/* (JSON) │ & Route Handling
+┌───────────────▼──────────────────────────────┴───────────────┐
+│ Express Backend │
+│ (Vite Assets Middleware, Router, Local Session Managers) │
+└───────────────┬──────────────────────────────▲───────────────┘
+│ JSON Payload with │ Structured JSON
+│ Schema Definitions │ Outputs (MIME Type)
+┌───────────────▼──────────────────────────────┴───────────────┐
+│ Google Gemini API │
+│ (gemini-3.5-flash LLM Model / Real-Time Generation) │
+└──────────────────────────────────────────────────────────────┘
+
 ---
 
 ## AI Usage & Prompt Engineering
