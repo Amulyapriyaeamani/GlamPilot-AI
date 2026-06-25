@@ -110,8 +110,10 @@ GlamPilot AI utilizes zero-shot semantic mapping and highly rigid output schemas
 ---
 
 ## Screenshots
-*(Add high-fidelity screenshots of the interface here after deploying or recording the workspace view)*
+
 *   **Home Marketplace:** Elegant, light-themed luxury card deck showing verified ratings, area badges, and booking indicators.
+  <img width="1600" height="763" alt="WhatsApp Image 2026-06-25 at 2 37 11 PM" src="https://github.com/user-attachments/assets/eae6ae7a-e12c-4dec-87f1-792bdf56ca9e" />
+
 *   **AI Budget Planner:** Step-by-step diagnostic forms showing exact budget slider boundaries and custom objectives.
 *   **Growth Copilot:** Dynamic metrics HUD with color-coded trend tickers, retention risk tables, and campaign copy drawers.
 
