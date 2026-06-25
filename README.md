@@ -114,8 +114,23 @@ GlamPilot AI utilizes zero-shot semantic mapping and highly rigid output schemas
 *   **Home Marketplace:** Elegant, light-themed luxury card deck showing verified ratings, area badges, and booking indicators.
   <img width="1600" height="763" alt="WhatsApp Image 2026-06-25 at 2 37 11 PM" src="https://github.com/user-attachments/assets/eae6ae7a-e12c-4dec-87f1-792bdf56ca9e" />
 
+  <img width="767" height="827" alt="image" src="https://github.com/user-attachments/assets/d9eeb79b-7cd0-4dac-918b-2e8fb1ab8cf3" />
+
+
 *   **AI Budget Planner:** Step-by-step diagnostic forms showing exact budget slider boundaries and custom objectives.
+<img width="1600" height="783" alt="image" src="https://github.com/user-attachments/assets/5fda8ac5-5adf-4c08-b466-734dec603b6a" />
+
+<img width="1600" height="810" alt="image" src="https://github.com/user-attachments/assets/e7614c10-7274-44af-9cc2-907f0d328ae7" />
+
+
 *   **Growth Copilot:** Dynamic metrics HUD with color-coded trend tickers, retention risk tables, and campaign copy drawers.
+<img width="1600" height="859" alt="image" src="https://github.com/user-attachments/assets/cb13a033-bb77-4b36-b1a2-7a3044daa5c1" />
+
+
+<img width="1600" height="819" alt="image" src="https://github.com/user-attachments/assets/26636b63-4d2b-412f-8999-dfdea4d80f76" />
+
+<img width="1600" height="799" alt="image" src="https://github.com/user-attachments/assets/579ea646-178a-4520-aecf-0fc4bef884b0" />
+
 
 ---
 
