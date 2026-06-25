@@ -131,11 +131,10 @@ GlamPilot AI utilizes zero-shot semantic mapping and highly rigid output schemas
 ## Team & SuperXgen Buildathon Metadata
 *   **Challenge:** SuperXgen AI Startup Buildathon 2026 – Beauty Salon Marketplace Challenge
 *   **Team Name:** amulyapriyaeamani441
-*   **Team ID:** [Insert Team ID if available]
-*   **Project URL:** [Insert Shared App URL here]
+*   **Project URL:** https://glampilot-ai-272580629844.asia-southeast1.run.app
 *   **Members:**
-    *   **Amulya Priya Eamani** — Product Design, UX Flow & Frontend Systems
-    *   **Sindhu Boddu** — Full-stack Engineering, AI Integrations & API Architecture
+    *   **Amulya Priya Eamani** 
+    *   **Sindhu Boddu** 
 
 ---
 
