@@ -1,0 +1,379 @@
+{
+  "entities": {
+    "user": {
+      "title": "User",
+      "description": "Store customer information.",
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "description": "Unique user ID (foreign key referencing authentication uid)"
+        },
+        "full_name": {
+          "type": "string",
+          "description": "Customer's full name"
+        },
+        "email": {
+          "type": "string",
+          "description": "Customer's email address"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Customer's contact phone number"
+        },
+        "gender": {
+          "type": "string",
+          "description": "Customer's gender preference"
+        },
+        "location": {
+          "type": "string",
+          "description": "Customer's preferred Hyderabad area (e.g. Jubilee Hills)"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when user profile was created"
+        }
+      },
+      "required": ["user_id", "full_name", "email"]
+    },
+    "salon": {
+      "title": "Salon",
+      "description": "Store salon details in Hyderabad.",
+      "type": "object",
+      "properties": {
+        "salon_id": {
+          "type": "string",
+          "description": "Unique key identifier"
+        },
+        "salon_name": {
+          "type": "string",
+          "description": "Name of the beauty salon"
+        },
+        "area": {
+          "type": "string",
+          "description": "Area neighborhood in Hyderabad"
+        },
+        "address": {
+          "type": "string",
+          "description": "Detailed physical street address"
+        },
+        "rating": {
+          "type": "number",
+          "description": "Average rating star score out of 5"
+        },
+        "total_reviews": {
+          "type": "number",
+          "description": "Total number of submitted reviews"
+        },
+        "price_range": {
+          "type": "string",
+          "enum": ["₹", "₹₹", "₹₹₹"],
+          "description": "Economic/budget indicator level"
+        },
+        "description": {
+          "type": "string",
+          "description": "Detailed brochure text about the salon"
+        },
+        "image_url": {
+          "type": "string",
+          "description": "URL link to primary salon banner image"
+        },
+        "speciality": {
+          "type": "string",
+          "description": "Top beauty specialization of this salon"
+        },
+        "owner_name": {
+          "type": "string",
+          "description": "Full name of the salon owner or contact"
+        },
+        "phone": {
+          "type": "string",
+          "description": "Business phone contact detail"
+        }
+      },
+      "required": ["salon_id", "salon_name", "area", "rating", "price_range"]
+    },
+    "service": {
+      "title": "Service",
+      "description": "Details of grooming or treatment services offered.",
+      "type": "object",
+      "properties": {
+        "service_id": {
+          "type": "string",
+          "description": "Unique service identifier"
+        },
+        "salon_id": {
+          "type": "string",
+          "description": "Reference ID linking to active salon"
+        },
+        "service_name": {
+          "type": "string",
+          "description": "Name of service (e.g. Bridal Makeup)"
+        },
+        "category": {
+          "type": "string",
+          "description": "Parent category type"
+        },
+        "price": {
+          "type": "number",
+          "description": "Cost price in Rupees (₹)"
+        },
+        "duration_minutes": {
+          "type": "number",
+          "description": "Duration expected for treatment session"
+        }
+      },
+      "required": ["service_id", "salon_id", "service_name", "category", "price"]
+    },
+    "review": {
+      "title": "Review",
+      "description": "Customer reviews and comments written for salons.",
+      "type": "object",
+      "properties": {
+        "review_id": {
+          "type": "string",
+          "description": "Unique review identifier"
+        },
+        "salon_id": {
+          "type": "string",
+          "description": "Reference ID linking to salon reviewed"
+        },
+        "user_id": {
+          "type": "string",
+          "description": "Reference ID linking to reviewing user"
+        },
+        "rating": {
+          "type": "number",
+          "description": "Individual ratings score from 1 to 5"
+        },
+        "review_text": {
+          "type": "string",
+          "description": "Rich text body comment matching experiences"
+        },
+        "review_date": {
+          "type": "string",
+          "description": "Date of submitted review"
+        }
+      },
+      "required": ["review_id", "salon_id", "rating", "review_text", "review_date"]
+    },
+    "booking": {
+      "title": "Booking",
+      "description": "Store verified appointments made on GlamPilot.",
+      "type": "object",
+      "properties": {
+        "booking_id": {
+          "type": "string",
+          "description": "Unique booking identifier key"
+        },
+        "user_id": {
+          "type": "string",
+          "description": "Reference user identifier"
+        },
+        "salon_id": {
+          "type": "string",
+          "description": "Reference salon identifier"
+        },
+        "service_id": {
+          "type": "string",
+          "description": "Reference service identifier"
+        },
+        "booking_date": {
+          "type": "string",
+          "description": "The date scheduled for appointment"
+        },
+        "booking_time": {
+          "type": "string",
+          "description": "The time slot scheduled (e.g. 3:00 PM)"
+        },
+        "total_amount": {
+          "type": "number",
+          "description": "Amount to pay in Indian Rupees (₹)"
+        },
+        "booking_status": {
+          "type": "string",
+          "enum": ["Confirmed", "Pending", "Completed", "Cancelled"],
+          "description": "Current status indicator of reservation"
+        }
+      },
+      "required": ["booking_id", "user_id", "salon_id", "booking_date", "booking_time", "total_amount", "booking_status"]
+    },
+    "consultation": {
+      "title": "AI Consultation",
+      "description": "Store customer's beauty occasion inputs.",
+      "type": "object",
+      "properties": {
+        "consultation_id": {
+          "type": "string",
+          "description": "Unique consultation session identifier"
+        },
+        "user_id": {
+          "type": "string",
+          "description": "Reference identifier of user"
+        },
+        "occasion": {
+          "type": "string",
+          "description": "Occasion name (e.g. Wedding, Date Night, etc.)"
+        },
+        "budget": {
+          "type": "number",
+          "description": "Financial budget slider selection in Rupees"
+        },
+        "location": {
+          "type": "string",
+          "description": "Preferred Hyderabad area name"
+        },
+        "services_needed": {
+          "type": "array",
+          "description": "List of strings indicating category or service needs"
+        },
+        "notes": {
+          "type": "string",
+          "description": "Additional text remarks or special requests"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp indicating session entry creation"
+        }
+      },
+      "required": ["consultation_id", "occasion", "budget", "location", "created_at"]
+    },
+    "recommendation": {
+      "title": "AI Recommendation",
+      "description": "Store individual recommendations matched.",
+      "type": "object",
+      "properties": {
+        "recommendation_id": {
+          "type": "string",
+          "description": "Unique recommended record key"
+        },
+        "consultation_id": {
+          "type": "string",
+          "description": "Referenced consultation ID"
+        },
+        "salon_id": {
+          "type": "string",
+          "description": "Matched Salon identifier"
+        },
+        "match_score": {
+          "type": "number",
+          "description": "Closeness rating as percentage"
+        },
+        "ai_reason": {
+          "type": "string",
+          "description": "Intelligent reasoning detailing why this matches"
+        },
+        "estimated_budget": {
+          "type": "number",
+          "description": "Calculated portion of spending allocation"
+        }
+      },
+      "required": ["recommendation_id", "consultation_id", "salon_id", "match_score", "ai_reason"]
+    },
+    "salon_analytics": {
+      "title": "Salon Analytics",
+      "description": "Store historical business metrics for dashboards.",
+      "type": "object",
+      "properties": {
+        "analytics_id": {
+          "type": "string",
+          "description": "Unique analytics record identifier"
+        },
+        "salon_id": {
+          "type": "string",
+          "description": "Referenced salon identifier"
+        },
+        "month": {
+          "type": "string",
+          "description": "Chronological month identifier"
+        },
+        "revenue": {
+          "type": "number",
+          "description": "Total monthly revenue completed in Rupees (₹)"
+        },
+        "bookings": {
+          "type": "number",
+          "description": "Total absolute check-ins or completed appointments"
+        },
+        "repeat_customers": {
+          "type": "number",
+          "description": "Percentage value of returning clientele"
+        },
+        "occupancy_rate": {
+          "type": "number",
+          "description": "Slot occupancy rate percentage"
+        }
+      },
+      "required": ["analytics_id", "salon_id", "month", "revenue", "bookings", "repeat_customers", "occupancy_rate"]
+    },
+    "ai_insight": {
+      "title": "AI Insight",
+      "description": "Store intelligent corporate insights to grow salon sales.",
+      "type": "object",
+      "properties": {
+        "insight_id": {
+          "type": "string",
+          "description": "Unique raw insight identifier"
+        },
+        "salon_id": {
+          "type": "string",
+          "description": "Referenced Salon identifier"
+        },
+        "insight_type": {
+          "type": "string",
+          "description": "Type classification of insight"
+        },
+        "insight_text": {
+          "type": "string",
+          "description": "The detailed structured insight proposal"
+        },
+        "generated_at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Generated timestamp info"
+        }
+      },
+      "required": ["insight_id", "salon_id", "insight_type", "insight_text", "generated_at"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": "user",
+      "description": "User profiles database"
+    },
+    "/salons/{salonId}": {
+      "schema": "salon",
+      "description": "Salons in Hyderabad catalog"
+    },
+    "/services/{serviceId}": {
+      "schema": "service",
+      "description": "Services list reference in Hyderabad"
+    },
+    "/reviews/{reviewId}": {
+      "schema": "review",
+      "description": "Verified guest reviews and ratings feedback"
+    },
+    "/bookings/{bookingId}": {
+      "schema": "booking",
+      "description": "GlamPilot salon reservation details"
+    },
+    "/consultations/{consultationId}": {
+      "schema": "consultation",
+      "description": "Customer digital consultation plans"
+    },
+    "/recommendations/{recommendationId}": {
+      "schema": "recommendation",
+      "description": "Algorithmic match recommendation records"
+    },
+    "/analytics/{analyticsId}": {
+      "schema": "salon_analytics",
+      "description": "Dashboard telemetry performance monthly logs"
+    },
+    "/insights/{insightId}": {
+      "schema": "ai_insight",
+      "description": "Business recommendations output records"
+    }
+  }
+}

@@ -1,0 +1,231 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Global Safety Net default catch-all (deny by default)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- REUSABLE SECURITY PRIMITIVES ---
+    
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isEmailVerified() {
+      return isSignedIn() && (
+        request.auth.token.email_verified == true || 
+        request.auth.token.email == 'sindhuboddu8@gmail.com'
+      );
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Platform admin check including bootstrapped developer email
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'sindhuboddu8@gmail.com' ||
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid))
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- ENTITY SCHEMAS & VALIDATORS ---
+
+    function isValidUser(data) {
+      return data.user_id is string && data.user_id.size() <= 128 &&
+             data.full_name is string && data.full_name.size() <= 128 &&
+             data.email is string && data.email.size() <= 128 && data.email.size() > 0 &&
+             (!data.keys().contains('phone') || (data.phone is string && data.phone.size() <= 32)) &&
+             (!data.keys().contains('gender') || (data.gender is string && data.gender.size() <= 32)) &&
+             (!data.keys().contains('location') || (data.location is string && data.location.size() <= 128));
+    }
+
+    function isValidSalon(data) {
+      return data.salon_id is string && data.salon_id.size() <= 128 &&
+             data.salon_name is string && data.salon_name.size() <= 128 &&
+             data.area is string && data.area.size() <= 128 &&
+             data.rating is number && data.rating >= 0 && data.rating <= 5 &&
+             data.total_reviews is int || data.total_reviews is number &&
+             data.price_range is string &&
+             (!data.keys().contains('address') || (data.address is string && data.address.size() <= 256)) &&
+             (!data.keys().contains('description') || (data.description is string && data.description.size() <= 1000)) &&
+             (!data.keys().contains('image_url') || (data.image_url is string && data.image_url.size() <= 512)) &&
+             (!data.keys().contains('speciality') || (data.speciality is string && data.speciality.size() <= 128)) &&
+             (!data.keys().contains('owner_name') || (data.owner_name is string && data.owner_name.size() <= 128)) &&
+             (!data.keys().contains('phone') || (data.phone is string && data.phone.size() <= 32));
+    }
+
+    function isValidService(data) {
+      return data.service_id is string && data.service_id.size() <= 128 &&
+             data.salon_id is string && data.salon_id.size() <= 128 &&
+             data.service_name is string && data.service_name.size() <= 128 &&
+             data.category is string && data.category.size() <= 64 &&
+             data.price is number && data.price >= 0 &&
+             (!data.keys().contains('duration_minutes') || (data.duration_minutes is int || data.duration_minutes is number));
+    }
+
+    function isValidReview(data) {
+      return data.review_id is string && data.review_id.size() <= 128 &&
+             data.salon_id is string && data.salon_id.size() <= 128 &&
+             data.user_id is string && data.user_id.size() <= 128 &&
+             data.rating is number && data.rating >= 1 && data.rating <= 5 &&
+             data.review_text is string && data.review_text.size() <= 1000 &&
+             data.review_date is string && data.review_date.size() <= 32;
+    }
+
+    function isValidBooking(data) {
+      return data.booking_id is string && data.booking_id.size() <= 128 &&
+             data.user_id is string && data.user_id.size() <= 128 &&
+             data.salon_id is string && data.salon_id.size() <= 128 &&
+             data.booking_date is string && data.booking_date.size() <= 32 &&
+             data.booking_time is string && data.booking_time.size() <= 32 &&
+             data.total_amount is number && data.total_amount >= 0 &&
+             data.booking_status is string && (
+               data.booking_status == 'Confirmed' || 
+               data.booking_status == 'Pending' || 
+               data.booking_status == 'Completed' || 
+               data.booking_status == 'Cancelled'
+             ) &&
+             (!data.keys().contains('service_id') || (data.service_id is string && data.service_id.size() <= 128));
+    }
+
+    function isValidConsultation(data) {
+      return data.consultation_id is string && data.consultation_id.size() <= 128 &&
+             data.occasion is string && data.occasion.size() <= 128 &&
+             data.budget is number && data.budget >= 0 &&
+             data.location is string && data.location.size() <= 128 &&
+             (!data.keys().contains('user_id') || (data.user_id is string && data.user_id.size() <= 128)) &&
+             (!data.keys().contains('notes') || (data.notes is string && data.notes.size() <= 2000)) &&
+             (!data.keys().contains('services_needed') || (data.services_needed is list && data.services_needed.size() <= 32));
+    }
+
+    function isValidRecommendation(data) {
+      return data.recommendation_id is string && data.recommendation_id.size() <= 128 &&
+             data.consultation_id is string && data.consultation_id.size() <= 128 &&
+             data.salon_id is string && data.salon_id.size() <= 128 &&
+             data.match_score is number && data.match_score >= 0 && data.match_score <= 100 &&
+             data.ai_reason is string && data.ai_reason.size() <= 2000 &&
+             (!data.keys().contains('estimated_budget') || (data.estimated_budget is number));
+    }
+
+    function isValidAnalytics(data) {
+      return data.analytics_id is string && data.analytics_id.size() <= 128 &&
+             data.salon_id is string && data.salon_id.size() <= 128 &&
+             data.month is string && data.month.size() <= 32 &&
+             data.revenue is number && data.revenue >= 0 &&
+             data.bookings is number && data.bookings >= 0 &&
+             data.repeat_customers is number &&
+             data.occupancy_rate is number;
+    }
+
+    function isValidInsight(data) {
+      return data.insight_id is string && data.insight_id.size() <= 128 &&
+             data.salon_id is string && data.salon_id.size() <= 128 &&
+             data.insight_type is string && data.insight_type.size() <= 64 &&
+             data.insight_text is string && data.insight_text.size() <= 2000;
+    }
+
+    // --- COLLECTION RULES MATCH BLOCKS ---
+
+    // 1. Users Collection
+    match /users/{userId} {
+      allow get: if isSignedIn() && (isOwner(userId) || isAdmin());
+      allow list: if isAdmin();
+      allow create: if isEmailVerified() && isOwner(userId) && isValidId(userId) && isValidUser(incoming());
+      allow update: if isEmailVerified() && isOwner(userId) && isValidUser(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['full_name', 'phone', 'gender', 'location'])
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 2. Salons Collection
+    match /salons/{salonId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidId(salonId) && isValidSalon(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // 3. Services Collection
+    match /services/{serviceId} {
+      allow read: if true;
+      allow create, update: if isAdmin() && isValidId(serviceId) && isValidService(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // 4. Reviews Collection
+    match /reviews/{reviewId} {
+      allow read: if true;
+      allow create: if isEmailVerified() && isValidId(reviewId) && isValidReview(incoming()) && isOwner(incoming().user_id);
+      allow update: if isEmailVerified() && isValidReview(incoming()) && isOwner(existing().user_id) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['rating', 'review_text', 'review_date'])
+      );
+      allow delete: if isAdmin() || (isEmailVerified() && isOwner(existing().user_id));
+    }
+
+    // 5. Bookings Collection
+    match /bookings/{bookingId} {
+      allow get: if isSignedIn() && (isOwner(existing().user_id) || isAdmin());
+      allow list: if isSignedIn() && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if isEmailVerified() && isValidId(bookingId) && isValidBooking(incoming()) && isOwner(incoming().user_id);
+      allow update: if isEmailVerified() && isValidBooking(incoming()) && (
+        isAdmin() || (
+          // Customer actions: can cancel or reschedule
+          isOwner(existing().user_id) && 
+          existing().booking_status != 'Completed' && 
+          existing().booking_status != 'Cancelled' && 
+          incoming().diff(existing()).affectedKeys().hasOnly(['booking_status', 'booking_date', 'booking_time'])
+        )
+      );
+      allow delete: if isAdmin();
+    }
+
+    // 6. Consultations Collection
+    match /consultations/{consultationId} {
+      allow get: if isSignedIn() && (isOwner(existing().user_id) || isAdmin());
+      allow list: if isSignedIn() && (resource.data.user_id == request.auth.uid || isAdmin());
+      allow create: if isEmailVerified() && isValidId(consultationId) && isValidConsultation(incoming()) && (
+        !incoming().keys().contains('user_id') || isOwner(incoming().user_id)
+      );
+      allow update: if isEmailVerified() && isOwner(existing().user_id) && isValidConsultation(incoming()) && (
+        incoming().diff(existing()).affectedKeys().hasOnly(['occasion', 'budget', 'location', 'services_needed', 'notes'])
+      );
+      allow delete: if isAdmin() || (isEmailVerified() && isOwner(existing().user_id));
+    }
+
+    // 7. Recommendations Collection
+    match /recommendations/{recommendationId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidId(recommendationId) && isValidRecommendation(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // 8. Salon Analytics Collection
+    match /analytics/{analyticsId} {
+      allow read: if isAdmin() || (isSignedIn() && exists(/databases/$(database)/documents/salons/$(resource.data.salon_id)));
+      allow create, update: if isAdmin() && isValidId(analyticsId) && isValidAnalytics(incoming());
+      allow delete: if isAdmin();
+    }
+
+    // 9. AI Insights Collection
+    match /insights/{insightId} {
+      allow read: if isSignedIn();
+      allow create, update: if isAdmin() && isValidId(insightId) && isValidInsight(incoming());
+      allow delete: if isAdmin();
+    }
+  }
+}
